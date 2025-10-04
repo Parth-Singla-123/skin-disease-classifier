@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Dermatological Disease Classification using TensorFlow
 
-## Getting Started
+This project is a deep learning solution for the classification of dermatological diseases from images. It utilizes a convolutional neural network (CNN) built with TensorFlow, leveraging the state-of-the-art EfficientNet architecture through transfer learning.
 
-First, run the development server:
+The model is trained to accurately identify 21 distinct skin conditions, demonstrating a practical application of computer vision in providing preliminary diagnostic insights.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Key Features
+- **Comprehensive Classification**: Identifies 21 distinct dermatological conditions.
+- **High Accuracy**: Utilizes the state-of-the-art EfficientNet model for robust performance.
+- **Confidence Scoring**: Provides a confidence score for each prediction.
+- **Simple Interface**: Easy to use via a command-line interface.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Model Performance
+The model was trained and evaluated on a diverse dataset of dermatological images.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+* **Validation Accuracy:** `75%`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### Classifiable Conditions
+The model can identify the following 21 skin conditions:
 
-## Learn More
+| | | |
+| :--- | :--- | :--- |
+| Acne | Actinic Keratosis | Benign Tumors |
+| Bullous | Candidiasis | Drug Eruption |
+| Eczema | Infestation & Bites | Lichen Planus |
+| Lupus | Moles | Psoriasis |
+| Rosacea | Seborrheic Keratoses| Skin Cancer |
+| Sun Damage | Tinea | Vascular Tumors |
+| Vasculitis | Vitiligo | Warts |
 
-To learn more about Next.js, take a look at the following resources:
+## Technologies Used
+- `Python`
+- `TensorFlow` & `Keras`
+- `scikit-learn`
+- `NumPy` & `Pandas`
+- `Matplotlib` for visualization
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo / Screenshots
+*A screenshot showing the prediction for a sample image:*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Example Prediction](path/to/your/screenshot.png)  
+*(**Note:** You must replace this with a real screenshot from your project.)*
 
-## Deploy on Vercel
+## Setup and Installation
+To run this project locally, follow these steps:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1.  **Clone the repository**
+    ```sh
+    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+    cd your-repo-name
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **Create a virtual environment (recommended)**
+    ```sh
+    python -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    ```
+
+3.  **Install the required dependencies**
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+## Usage
+To predict a single image, run the `predict.py` script from the root directory:
+```sh
+python predict.py --image /path/to/your/image.jpg
