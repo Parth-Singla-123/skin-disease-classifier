@@ -36,7 +36,8 @@ The model can identify the following 21 skin conditions:
 - `Matplotlib` for visualization
 
 ## Prediction Report
-[!Classes Report](/class_prediction_report.png)
+
+![Skin Disease Classifier Report](https://github.com/Parth-Singla-123/skin-disease-classifier/blob/main/class_prediction_report.png?raw=true)
 
 ## Setup and Installation
 To run this project locally, follow these steps:
