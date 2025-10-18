@@ -36,7 +36,7 @@ The model can identify the following 21 skin conditions:
 - `Matplotlib` for visualization
 
 ## Prediction Report
-[!Classes Report](class_prediction_report.png)
+[!Classes Report](/class_prediction_report.png)
 
 ## Setup and Installation
 To run this project locally, follow these steps:
