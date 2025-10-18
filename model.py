@@ -8,7 +8,6 @@ import os
 from tqdm import tqdm
 import numpy as np
 
-# --- 1. Configuration ---
 PROJECT_ROOT = '.'
 TRAIN_DIR = os.path.join(PROJECT_ROOT, 'train')
 TEST_DIR = os.path.join(PROJECT_ROOT, 'test')
@@ -18,16 +17,12 @@ NUM_CLASSES = 21
 BATCH_SIZE = 32
 IMAGE_SIZE = (224, 224)
 
-# --- Hyperparameters for the two training stages ---
-# Stage 1: Train only the classifier head
 EPOCHS_STAGE_1 = 15
 LR_STAGE_1 = 0.001
 
-# Stage 2: Fine-tune the entire model
 EPOCHS_STAGE_2 = 30
-LR_STAGE_2 = 0.00005 # A very small learning rate is crucial for fine-tuning
+LR_STAGE_2 = 0.00005 
 
-# --- 2. Custom Dataset (Unchanged) ---
 class SkinDiseaseDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir
@@ -61,14 +56,12 @@ class SkinDiseaseDataset(Dataset):
             image = self.transform(image)
         return image, label
 
-# --- 3. More Advanced Data Augmentation ---
 data_transforms = {
     'train': transforms.Compose([
         transforms.Resize(IMAGE_SIZE),
         transforms.TrivialAugmentWide(),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-        # Add Random Erasing to make the model more robust
         transforms.RandomErasing(p=0.5, scale=(0.02, 0.2))
     ]),
     'val': transforms.Compose([
@@ -78,7 +71,6 @@ data_transforms = {
     ]),
 }
 
-# --- 4. Dataset and DataLoader Creation ---
 print("Loading datasets...")
 train_dataset = SkinDiseaseDataset(root_dir=TRAIN_DIR, transform=data_transforms['train'])
 val_dataset = SkinDiseaseDataset(root_dir=TEST_DIR, transform=data_transforms['val'])
@@ -90,7 +82,6 @@ dataloaders = {
 }
 dataset_sizes = {'train': len(train_dataset), 'val': len(val_dataset)}
 
-# --- NEW: Function to Calculate Class Weights ---
 def calculate_class_weights(dataset):
     """Calculates class weights to handle imbalance."""
     labels = np.array(dataset.labels)
@@ -100,7 +91,6 @@ def calculate_class_weights(dataset):
     weights = total_samples / (len(class_counts) * class_counts)
     return torch.tensor(weights, dtype=torch.float)
 
-# --- 5. Model Definition (Unchanged) ---
 def get_model(num_classes):
     model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
     num_ftrs = model.classifier[1].in_features
@@ -110,7 +100,6 @@ def get_model(num_classes):
     )
     return model
 
-# --- 6. The Optimized Training Loop (same loop, used for both stages) ---
 def train_model(model, criterion, optimizer, scheduler, num_epochs, current_stage):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -119,9 +108,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs, current_stag
     scaler = torch.cuda.amp.GradScaler(enabled=torch.cuda.is_available())
     best_acc = 0.0
 
-    # Load the best accuracy from the previous stage if fine-tuning
     if current_stage.startswith("Stage 2"):
-        # We start by checking the accuracy of the loaded model
         model.eval()
         running_corrects = 0
         with torch.no_grad():
@@ -179,17 +166,13 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs, current_stag
     return model
 
 if __name__ == '__main__':
-    # --- Get the Model ---
     model = get_model(NUM_CLASSES)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    # --- Calculate Class Weights and define weighted loss function ---
     class_weights = calculate_class_weights(train_dataset).to(device)
     criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.1)
     print(f"Using class weights: {class_weights}")
 
-    # --- STAGE 1: TRAIN THE CLASSIFIER HEAD ---
-    # Freeze the feature extractor
     for param in model.features.parameters():
         param.requires_grad = False
     
@@ -198,15 +181,12 @@ if __name__ == '__main__':
 
     model = train_model(model, criterion, optimizer_stage1, scheduler_stage1, num_epochs=EPOCHS_STAGE_1, current_stage="Stage 1: Feature Extraction")
 
-    # --- STAGE 2: FINE-TUNE THE ENTIRE MODEL ---
-    # Unfreeze all layers
     for param in model.parameters():
         param.requires_grad = True
 
     optimizer_stage2 = optim.Adam(model.parameters(), lr=LR_STAGE_2)
     scheduler_stage2 = optim.lr_scheduler.CosineAnnealingLR(optimizer_stage2, T_max=EPOCHS_STAGE_2)
-    
-    # Load the best weights from stage 1 before starting stage 2
+
     print(f"\nLoading best model from Stage 1 saved at: {MODEL_SAVE_PATH}")
     model.load_state_dict(torch.load(MODEL_SAVE_PATH))
 

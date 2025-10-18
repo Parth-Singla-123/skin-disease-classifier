@@ -35,11 +35,8 @@ The model can identify the following 21 skin conditions:
 - `NumPy` & `Pandas`
 - `Matplotlib` for visualization
 
-## Demo / Screenshots
-*A screenshot showing the prediction for a sample image:*
-
-![Example Prediction](path/to/your/screenshot.png)  
-*(**Note:** You must replace this with a real screenshot from your project.)*
+## Prediction Report
+[!Classes Report](class_prediction_report.png)
 
 ## Setup and Installation
 To run this project locally, follow these steps:
